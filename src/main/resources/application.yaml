@@ -1,0 +1,8 @@
+server:
+  port: 8091
+  ssl:
+    key-alias: springboot
+    key-store: C:\Users\nutha\springboot.p12
+    key-store-password: password
+    key-store-type: pkcs12
+    key-password: password
