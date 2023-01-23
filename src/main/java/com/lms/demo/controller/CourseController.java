@@ -39,13 +39,13 @@ public class CourseController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Course Data Retrieved"),
             @ApiResponse(responseCode = "403", description = "Forbidden", content = {@Content()}),
-            @ApiResponse(responseCode = "404", description = "Course Not Found" , content = {@Content()}),
-            @ApiResponse(responseCode = "500", description = "Internal Server Error" , content = {@Content()})
+            @ApiResponse(responseCode = "404", description = "Course Not Found", content = {@Content()}),
+            @ApiResponse(responseCode = "500", description = "Internal Server Error", content = {@Content()})
     })
     public ResponseEntity<List<CourseResponseDto>> getAllCourses() {
 
         List<CourseResponseDto> courses = courseService.getCourses();
-        if(courses.isEmpty()) {
+        if (courses.isEmpty()) {
             LOG.error("Course data not found");
             throw new CourseNotFoundException(COURSE_NOT_FOUND);
         }
@@ -61,10 +61,10 @@ public class CourseController {
             @ApiResponse(responseCode = "404", description = "Course Not Found", content = {@Content()}),
             @ApiResponse(responseCode = "500", description = "Internal Server Error", content = {@Content()})
     })
-    public ResponseEntity<List<CourseResponseDto>> getCoursesBasedOnTechnology(@PathVariable("technology") String technology){
+    public ResponseEntity<List<CourseResponseDto>> getCoursesBasedOnTechnology(@PathVariable("technology") String technology) {
 
         List<CourseResponseDto> courses = courseService.getCourses(technology);
-        if(courses.isEmpty()) {
+        if (courses.isEmpty()) {
             LOG.error("Course data not found for {}", technology);
             throw new CourseNotFoundException(COURSE_NOT_FOUND);
         }
@@ -83,12 +83,13 @@ public class CourseController {
             @ApiResponse(responseCode = "500", description = "Internal Server Error", content = {@Content()})
     })
     public ResponseEntity<List<CourseResponseDto>> getCoursesBasedOnTechAndDuration(@PathVariable("technology") String technology,
-                                                 @PathVariable("durationFromRange") int durationFromRange,
-                                                 @PathVariable("durationToRange") int durationToRange){
+                                                                                    @PathVariable("durationFromRange") int durationFromRange,
+                                                                                    @PathVariable("durationToRange") int durationToRange) {
 
         List<CourseResponseDto> courses = courseService.getCourses(technology, durationFromRange, durationToRange);
-        if(courses.isEmpty()) {
-            LOG.error("Course data not found for {} technology and duration between {} and {}", technology, durationFromRange, durationToRange);
+        if (courses.isEmpty()) {
+            LOG.error("Course data not found for {} technology and duration between {} and {}", technology,
+                    durationFromRange, durationToRange);
             throw new CourseNotFoundException(COURSE_NOT_FOUND);
         }
 
@@ -96,7 +97,7 @@ public class CourseController {
 
     }
 
-    @PostMapping(value= "/add")
+    @PostMapping(value = "/add")
     @Operation(summary = "POST /add", description = "Add Course")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "201", description = "Course added", content = {@Content()}),
@@ -119,12 +120,11 @@ public class CourseController {
             @ApiResponse(responseCode = "404", description = "Course Not Found", content = {@Content()}),
             @ApiResponse(responseCode = "500", description = "Internal Server Error", content = {@Content()})
     })
-    public ResponseEntity<String> deleteCourse(@PathVariable("courseId") String courseId){
+    public ResponseEntity<String> deleteCourse(@PathVariable("courseId") String courseId) {
         courseService.deleteCourse(courseId);
         return new ResponseEntity<>("Course deleted", HttpStatus.OK);
 
     }
-
 
 
 }
