@@ -9,6 +9,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.slf4j.Logger;
@@ -35,7 +36,7 @@ public class CourseController {
     private static final Logger LOG = LoggerFactory.getLogger(CourseController.class);
 
     @GetMapping(value = "/getAll")
-    @Operation(summary = "GET /getAll", description = "Get all courses")
+    @Operation(summary = "GET /getAll", description = "Get all courses", security = { @SecurityRequirement(name = "bearer-key") })
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Course Data Retrieved"),
             @ApiResponse(responseCode = "403", description = "Forbidden", content = {@Content()}),
@@ -54,7 +55,7 @@ public class CourseController {
     }
 
     @GetMapping(value = "/info/{technology}")
-    @Operation(summary = "GET /info/{technology}", description = "Get courses based on given technology")
+    @Operation(summary = "GET /info/{technology}", description = "Get courses based on given technology", security = { @SecurityRequirement(name = "bearer-key") })
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Course Data Retrieved"),
             @ApiResponse(responseCode = "403", description = "Forbidden", content = {@Content()}),
@@ -75,7 +76,8 @@ public class CourseController {
 
     @GetMapping(value = "/get/{technology}/{durationFromRange}/{durationToRange}")
     @Operation(summary = "GET /get/{technology}/{durationFromRange}/{durationToRange}",
-            description = "Get courses based on given technology and duration")
+            description = "Get courses based on given technology and duration",
+            security = { @SecurityRequirement(name = "bearer-key") })
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Course Data Retrieved"),
             @ApiResponse(responseCode = "403", description = "Forbidden", content = {@Content()}),
@@ -98,7 +100,7 @@ public class CourseController {
     }
 
     @PostMapping(value = "/add")
-    @Operation(summary = "POST /add", description = "Add Course")
+    @Operation(summary = "POST /add", description = "Add Course", security = { @SecurityRequirement(name = "bearer-key") })
     @ApiResponses(value = {
             @ApiResponse(responseCode = "201", description = "Course added", content = {@Content()}),
             @ApiResponse(responseCode = "400", description = "Bad Request", content = {@Content()}),
@@ -113,7 +115,8 @@ public class CourseController {
     }
 
     @DeleteMapping(value = "/delete/{courseId}")
-    @Operation(summary = "DELETE /delete/{courseId}", description = "delete course based on given Id")
+    @Operation(summary = "DELETE /delete/{courseId}", description = "delete course based on given Id"
+    ,security = { @SecurityRequirement(name = "bearer-key") })
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Course deleted", content = {@Content()}),
             @ApiResponse(responseCode = "403", description = "Forbidden", content = {@Content()}),
