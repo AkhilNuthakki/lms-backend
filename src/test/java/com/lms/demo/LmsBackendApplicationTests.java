@@ -1,10 +1,12 @@
 package com.lms.demo;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.lms.demo.config.JWTAuthTokenConfiguration;
 import com.lms.demo.controller.CourseController;
 import com.lms.demo.dto.request.CourseRequestDto;
 import com.lms.demo.dto.response.CourseResponseDto;
 import com.lms.demo.service.CourseServiceImpl;
+import com.nimbusds.jwt.SignedJWT;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
@@ -43,6 +45,11 @@ class LmsBackendApplicationTests {
 	@Autowired
 	private MockMvc mockMvc;
 
+	@Autowired
+	private JWTAuthTokenConfiguration jwtAuthTokenConfiguration;
+
+	private String TOKEN = null;
+
 	private static final CourseResponseDto course1 = CourseResponseDto.buildCourseDetailsWith()
 			.id("A1234")
 			.name("The Angular Framework")
@@ -74,10 +81,12 @@ class LmsBackendApplicationTests {
 	private static final List<CourseResponseDto> emptycourseResponseDtoList = Collections.emptyList();
 
 	@BeforeAll
-	public static void initialiseVariables(){
+	public void initialiseVariables(){
 		courseResponseDtoList = new ArrayList<>();
 		courseResponseDtoList.add(course1);
 		courseResponseDtoList.add(course2);
+		SignedJWT signedJWT = jwtAuthTokenConfiguration.generateToken("ADMIN");
+		TOKEN = signedJWT.serialize();
 	}
 
 
@@ -85,6 +94,7 @@ class LmsBackendApplicationTests {
 	void givenUnavailableTechnologyThenCourseNotFoundExceptionRestAction() throws Exception {
 		when(courseService.getCourses(anyString())).thenReturn(emptycourseResponseDtoList);
 		this.mockMvc.perform(MockMvcRequestBuilders.get("/api/v1.0/lms/courses/info/{technology}", "Web")
+				.header("Authorization", "Bearer " + TOKEN)
 				.accept(MediaType.APPLICATION_JSON)).andExpect(status().isNotFound());
 	}
 
@@ -92,6 +102,7 @@ class LmsBackendApplicationTests {
 	void givenCourseTechnologyGetFilteredCoursesRestAction() throws Exception {
 		when(courseService.getCourses(anyString())).thenReturn(courseResponseDtoList);
 		this.mockMvc.perform(MockMvcRequestBuilders.get("/api/v1.0/lms/courses/info/{technology}", "Web")
+				.header("Authorization", "Bearer " + TOKEN)
 				.accept(MediaType.APPLICATION_JSON)).andExpect(status().isOk());
 	}
 
@@ -101,6 +112,7 @@ class LmsBackendApplicationTests {
 		this.mockMvc.perform(MockMvcRequestBuilders.
 				get("/api/v1.0/lms/courses/get/{technology}/{durationFromRange}/{durationToRange}",
 						"Web", 1200, 1400)
+				.header("Authorization", "Bearer " + TOKEN)
 				.accept(MediaType.APPLICATION_JSON)).andExpect(status().isNotFound());
 	}
 
@@ -110,6 +122,7 @@ class LmsBackendApplicationTests {
 		this.mockMvc.perform(MockMvcRequestBuilders.
 				get("/api/v1.0/lms/courses/get/{technology}/{durationFromRange}/{durationToRange}",
 						"Web", 1200, 1400)
+				.header("Authorization", "Bearer " + TOKEN)
 				.accept(MediaType.APPLICATION_JSON)).andExpect(status().isOk());
 	}
 
@@ -117,6 +130,7 @@ class LmsBackendApplicationTests {
 	void givenNoCourseDataAvailableThenCourseNotFoundExceptionRestAction() throws Exception {
 		when(courseService.getCourses()).thenReturn(emptycourseResponseDtoList);
 		this.mockMvc.perform(MockMvcRequestBuilders.get("/api/v1.0/lms/courses/getAll")
+				.header("Authorization", "Bearer " + TOKEN)
 				.accept(MediaType.APPLICATION_JSON)).andExpect(status().isNotFound());
 	}
 
@@ -124,6 +138,7 @@ class LmsBackendApplicationTests {
 	void givenNoCourseTechnologyAndDurationGetAllCoursesRestAction() throws Exception {
 		when(courseService.getCourses()).thenReturn(courseResponseDtoList);
 		this.mockMvc.perform(MockMvcRequestBuilders.get("/api/v1.0/lms/courses/getAll")
+				.header("Authorization", "Bearer " + TOKEN)
 				.accept(MediaType.APPLICATION_JSON)).andExpect(status().isOk());
 	}
 
@@ -131,8 +146,9 @@ class LmsBackendApplicationTests {
 	void courseAddedWhenProvidedValidCourseDetailsRestAction() throws Exception {
 		doNothing().when(courseService).addCourse(any());
 		this.mockMvc.perform(MockMvcRequestBuilders.post("/api/v1.0/lms/courses/add")
-						.content(asJsonString(courseRequestDto))
-						.contentType(MediaType.APPLICATION_JSON)
+				.header("Authorization", "Bearer " + TOKEN)
+				.content(asJsonString(courseRequestDto))
+				.contentType(MediaType.APPLICATION_JSON)
 				.accept(MediaType.APPLICATION_JSON)).andExpect(status().isCreated());
 	}
 
@@ -148,6 +164,7 @@ class LmsBackendApplicationTests {
 	void courseDeleteWhenProvidedCourseIdRestAction() throws Exception {
 		doNothing().when(courseService).deleteCourse(anyString());
 		this.mockMvc.perform(MockMvcRequestBuilders.delete("/api/v1.0/lms/courses/delete/{courseId}", "Course1234")
+				.header("Authorization", "Bearer " + TOKEN)
 				.accept(MediaType.APPLICATION_JSON)).andExpect(status().isOk());
 	}
 
